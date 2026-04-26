@@ -17,8 +17,12 @@ dependencies = [
 ]
 
 [tool.uv.sources]
+# Released build123d 0.10.0 transitively pulls vtk, which has no wheel for
+# Python 3.13+ — so for 3.13 and 3.14 we resolve build123d from its
+# upstream dev branch (which depends on cadquery-ocp-novtk and skips vtk
+# entirely). Python 3.10–3.12 keep using the released wheel from PyPI.
 build123d = [
-    { git = "https://github.com/gumyr/build123d.git", branch = "dev", marker = "python_version >= '3.14'" },
+    { git = "https://github.com/gumyr/build123d.git", branch = "dev", marker = "python_version >= '3.13'" },
 ]
 
 [project.urls]

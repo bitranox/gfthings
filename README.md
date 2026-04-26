@@ -63,14 +63,22 @@ Clone the repo and let uv manage the environment:
 
     uv run --group test pytest
 
-Python 3.14 note: the released `build123d` on PyPI caps at `python<3.14`.
-On 3.14+, this project resolves `build123d` from its upstream `dev` branch
-via a marker-conditional `[tool.uv.sources]` entry, so `uv sync` /
-`uv tool install` from a checkout work; on 3.10–3.13 the regular PyPI
-release is used. The `[tool.uv.sources]` block is uv-specific metadata
-and is not baked into a built wheel, so the project remains publishable
-to PyPI — but plain `pip install gfthings` on 3.14 will fail to resolve
-`build123d` until upstream ships a 3.14-compatible release.
+Python 3.13 / 3.14 note: the released `build123d` on PyPI (0.10.0)
+transitively pulls `vtk`, which has no Python 3.13 or 3.14 wheels, so a
+plain install fails on those interpreters. On 3.13 and 3.14 this project
+resolves `build123d` from its upstream `dev` branch (which depends on
+`cadquery-ocp-novtk` and skips the `vtk` dependency entirely) via a
+marker-conditional `[tool.uv.sources]` entry — `uv sync`, `uv tool
+install`, and `uvx --from .` all work from a checkout. On 3.10–3.12 the
+regular PyPI release is used.
+
+The `[tool.uv.sources]` block is uv-specific metadata and is not baked
+into a built wheel, so the project remains publishable to PyPI. Plain
+`pip install gfthings` on 3.13 / 3.14 will still fail (pip ignores
+`[tool.uv.sources]` and tries to resolve the released wheel, which then
+hits the missing `vtk` wheels) until upstream `build123d` ships a release
+that also targets 3.13+ — `uv` is the supported install path on those
+versions for now.
 
 Copyright (C) Paul Bone
 Distributed under: CC BY-NC-SA 4.0
