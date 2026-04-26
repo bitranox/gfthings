@@ -50,6 +50,52 @@ things out or for CI:
 The `--from gfthings` is required because the command names (`gfbin`,
 etc.) don't match the package name.
 
+Recipe scripts (gfbin.sh / .ps1, gfbase.sh / .ps1, gfedge.sh / .ps1, gfpin.sh / .ps1)
+-------------------------------------------------------------------------------------
+
+For day-to-day printing it's awkward to remember the exact CLI flags
+that produced a particular part. The repo ships a pair of *recipe*
+launcher scripts for every tool — one Bash version (`*.sh`, for Linux
+and macOS) and one PowerShell version (`*.ps1`, for Windows) — that
+each declare the parameters as variables at the top, auto-derive the
+output filename from those variables, and then call `uvx --from <git
+URL> <tool>` for you.
+
+Workflow:
+
+1. Copy the recipe for the tool you want, renaming it to whatever
+   describes the part — e.g.
+
+       cp gfbin.sh   screws-bin-2x2x4.sh        # Linux / macOS
+       Copy-Item gfbin.ps1 .\screws-bin-2x2x4.ps1   # Windows
+
+2. Edit the variables at the top (dimensions, scoop, magnet flags,
+   output format, etc.) to taste.
+
+3. Run it:
+
+       ./screws-bin-2x2x4.sh                   # Linux / macOS
+       .\screws-bin-2x2x4.ps1                  # Windows
+
+The script prints the equivalent `uvx ... gfbin ...` invocation it's
+about to run, then writes a `.step` (or `.stl`) file next to the
+script. The filename is built from the parameters — toggling
+`NoMagnet=true` adds `_nomagnet` to the name, switching to `Format=stl`
+flips the extension, etc. — so the same recipe always regenerates the
+same file, and small tweaks produce uniquely-named siblings without
+clobbering anything.
+
+The Bash and PowerShell versions take exactly the same variables, so
+recipes are portable: a `.sh` and `.ps1` with the same values produce
+identical CAD output. Both pin `GfthingsSource` to the
+`bitranox/gfthings@py314compat` branch so 3.13 / 3.14 users get the
+upstream `build123d` `dev` branch automatically (see the Python 3.13 /
+3.14 note below); change that line if you want to track a different
+fork or branch.
+
+Tools covered: `gfbin` (bins), `gfbase` (bases), `gfedge` (drawer-edge
+fillers), `gfpin` (the small attaching pin).
+
 Develop gfthings
 ----------------
 

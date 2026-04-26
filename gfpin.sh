@@ -5,6 +5,12 @@
 
 set -euo pipefail
 
+# NOTE: this URL points at the bitranox fork's `py314compat` branch, which
+# carries the not-yet-upstreamed Python 3.13 / 3.14 compatibility patches
+# (PaulBone/gfthings#9). Once that PR is merged upstream, replace the
+# value below with one of:
+#   GfthingsSource='git+https://github.com/PaulBone/gfthings.git'      # or @main
+#   GfthingsSource='gfthings'                                          # once a PyPI release ships
 GfthingsSource='git+https://github.com/bitranox/gfthings.git@py314compat'
 
 # ---- Output ----
