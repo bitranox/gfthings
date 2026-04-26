@@ -13,7 +13,7 @@ class Pin(BasePartObject):
                  align: Align | tuple[Align, Align, Align] = None,
                  mode: Mode = Mode.ADD):
         with BuildPart() as p:
-            total_height = 3.2 + plate_base_height + 0.5
+            total_height = 3.2 + plate_base_height(False) + 0.5
             shaft_len = total_height - (magnet_dia - screw_dia)/2
             inner_shaft = 1.0
             outer_shaft = 1.7
