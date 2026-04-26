@@ -42,13 +42,18 @@ class BinBase(BasePartObject):
                  refined: bool,
                  magnet_dia: float,
                  magnet_depth: float,
+                 magnet: bool = True,
                  bin_size: float = 42,
                  rotation: tuple[float, float, float] | Rotation = (0, 0, 0),
                  align: Align | tuple[Align, Align, Align] = None,
                  mode: Mode = Mode.ADD):
         with BuildPart() as p:
             GFProfileBin(bin_size=bin_size)
-            if refined:
+            if not magnet:
+                # Skip both refined slots and unrefined holes — bins don't
+                # have screw holes, so --no-magnet means a plain base.
+                pass
+            elif refined:
                 with Locations(faces().filter_by(Plane.XY).sort_by(Axis.Z)[0]):
                     with PolarLocations(0, 4):
                         with Locations((35.6/2-4.8+magnet_dia/2, 35.6/2+0.8+2.15)):
@@ -61,7 +66,7 @@ class BinBase(BasePartObject):
                 with Locations(faces().filter_by(Plane.XY).sort_by(Axis.Z)[0]):
                     magnet_offset = 35.6/2 - 4.8
                     with GridLocations(magnet_offset*2, magnet_offset*2, 2, 2):
-                        Hole(magnet_dia/2, magnet_depth)                
+                        Hole(magnet_dia/2, magnet_depth)
             
         super().__init__(p.part, rotation, align, mode)
 
@@ -155,6 +160,7 @@ class Bin(BasePartObject):
                  scoop_rad : float,
                  divisions : int = 1,
                  refined : bool = True,
+                 magnet : bool = True,
                  magnet_dia : float = 6,
                  magnet_depth : float = 2,
                  half_grid : bool = False,
@@ -184,6 +190,7 @@ class Bin(BasePartObject):
                 with GridLocations(bs, bs, int(w), int(d)):
                     BinBase(refined=refined,
                             bin_size = 42 if not half_grid else 21,
+                            magnet=magnet,
                             magnet_dia=magnet_dia,
                             magnet_depth=magnet_depth,
                             align=(Align.CENTER, Align.CENTER, Align.MAX))
@@ -321,6 +328,7 @@ class FunkyBin(BasePartObject):
                  array : list,
                  height_units : int,
                  refined : bool = True,
+                 magnet : bool = True,
                  magnet_dia : float = 6,
                  magnet_depth : float = 2,
                  wall_thickness : float = 1.2,
@@ -363,6 +371,7 @@ class FunkyBin(BasePartObject):
                                         (y - depth/2 + 1/2)*bin_size,
                                         -wall_height/2)):
                             BinBase(refined=refined,
+                                    magnet=magnet,
                                     magnet_depth=magnet_depth,
                                     magnet_dia=magnet_dia,
                                     align=(Align.CENTER, Align.CENTER, Align.MAX))
@@ -381,6 +390,7 @@ class HalfWallBin(BasePartObject):
                  divisions : int = 1,
                  lip : bool = True,
                  refined : bool = True,
+                 magnet : bool = True,
                  half_grid : bool = False,
                  wall_thickness : float = 1.2,
                  magnet_dia : float = 6,
@@ -391,6 +401,7 @@ class HalfWallBin(BasePartObject):
                 divisions=divisions,
                 lip=lip,
                 refined=refined,
+                magnet=magnet,
                 magnet_dia=magnet_dia,
                 magnet_depth=magnet_depth,
                 scoop_rad=0,
