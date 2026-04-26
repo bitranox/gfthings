@@ -10,20 +10,67 @@ Gridfinity is an open source storage system best introduced
 Look on [thangs](thangs.com) and 
 [printables](printables.com) for more compatible parts.
 
-Setup, You can install with pipx.
+Install uv
+----------
 
-    sudo apt install pipx
-    pipx install gfthings
+Linux / macOS:
 
-If you want to modify gfthings then build it with poetry.
+    curl -LsSf https://astral.sh/uv/install.sh | sh
 
-    sudo apt install pipx
-    pipx install poetry
-    poetry add ocp-vscode
-    poetry install
+Windows (PowerShell):
 
-If you choose this option then you must prefix your commands with
-`poetry run`
+    powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+See [the uv install docs](https://docs.astral.sh/uv/getting-started/installation/)
+for package-manager alternatives (Homebrew, winget, scoop, pipx, etc.).
+
+Install gfthings as a CLI tool
+------------------------------
+
+Install gfthings into an isolated, uv-managed environment and put its
+commands (`gfbin`, `gfbase`, `gfedge`, `gfpin`) on your `PATH`:
+
+    uv tool install gfthings
+
+Upgrade or remove later with:
+
+    uv tool upgrade gfthings
+    uv tool uninstall gfthings
+
+Run without installing (uvx)
+----------------------------
+
+`uvx` runs a tool in a one-shot, ephemeral environment — handy for trying
+things out or for CI:
+
+    uvx --from gfthings gfbin -h
+    uvx --from gfthings gfbin -x 2 -y 3 -o bin.step
+    uvx --from gfthings gfbase -x 4 -y 3 -o base.step
+
+The `--from gfthings` is required because the command names (`gfbin`,
+etc.) don't match the package name.
+
+Develop gfthings
+----------------
+
+Clone the repo and let uv manage the environment:
+
+    uv sync                 # creates .venv and installs deps + project
+    uv add ocp-vscode       # optional: add a dependency
+    uv run gfbin -h         # run a script from the project
+
+`uv sync` also picks up the `test` dependency group; run the suite with:
+
+    uv run --group test pytest
+
+Python 3.14 note: the released `build123d` on PyPI caps at `python<3.14`.
+On 3.14+, this project resolves `build123d` from its upstream `dev` branch
+via a marker-conditional `[tool.uv.sources]` entry, so `uv sync` /
+`uv tool install` from a checkout work; on 3.10–3.13 the regular PyPI
+release is used. The `[tool.uv.sources]` block is uv-specific metadata
+and is not baked into a built wheel, so the project remains publishable
+to PyPI — but plain `pip install gfthings` on 3.14 will fail to resolve
+`build123d` until upstream ships a 3.14-compatible release.
 
 Copyright (C) Paul Bone
 Distributed under: CC BY-NC-SA 4.0
